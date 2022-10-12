@@ -44,9 +44,7 @@ Resources:
           #!/bin/bash
           sudo apt update
           sudo apt install ansible -y
-          git clone https://github.com/edo2004/react-app.git
-          cd react-app
-          ansible-playbook provison_calculator.yaml
+          sudo -u ubuntu sh -c "cd /home/ubuntu; git clone https://github.com/edo2004/react-app.git; cd react-app; ansible-playbook provison_calculator.yaml"
   
   # CommandRunner:
   #   # DnodeependsOn: Instance
