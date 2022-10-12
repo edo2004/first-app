@@ -1,0 +1,103 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  AMI:
+    Type: String
+    Default: ami-0149b2da6ceec4bb0
+    Description: The Windows AMI to use.
+
+  KeyPair:
+    Description: Which Key Pair would you like to use for remote access?
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    Default: 'deploy'
+
+Resources:
+
+  InstanceSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: For ssh on port 22 access and 8080 port access for Customer App
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: "22"
+          ToPort: "22"
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: "3000"
+          ToPort: "3000"
+          CidrIp: 0.0.0.0/0
+
+  Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      Tags:
+        - Key: Name
+          Value: ReactApp
+      ImageId: !Ref AMI # ImageId depends on a region. The current image is valid ONLY in US-EAST-1
+      KeyName: !Ref KeyPair # Your pem key name
+      SecurityGroups:
+        - !Ref InstanceSG
+      UserData: !Base64
+        Fn::Sub: |
+          #!/bin/bash
+          sudo apt update
+          sudo apt install ansible -y
+          git clone https://github.com/edo2004/react-app.git
+          cd react-app
+          ansible-playbook provison_calculator.yaml
+  
+  # CommandRunner:
+  #   # DnodeependsOn: Instance
+  #   Type: AWSUtility::CloudFormation::CommandRunner
+  #   Properties:
+  #     Command: 'git clone https://github.com/edo2004/react-app.git'
+
+  
+    # Metadata: 
+    #   AWS::CloudFormation::Init: 
+    #     configSets: 
+    #       ascending: 
+    #         - "config1"
+    #         - "config2"
+    #         - "config3"
+    #       descending: 
+    #         - "config3"
+    #         - "config2"
+    #         - "config1"
+    #     config1: 
+    #       commands: 
+    #         test: 
+    #           command: "git clone https://github.com/edo2004/react-app.git"
+    #           env: 
+    #             CFNTEST: "I come from config1."
+    #           cwd: "~"
+    #     config2: 
+    #       commands: 
+    #         test: 
+    #           command: "cd react-app"
+    #           env: 
+    #             CFNTEST: "I come from config2"
+    #           cwd: "~"
+    #     config3: 
+    #       commands: 
+    #         test: 
+    #           command: "ansible-playbook provison_calculator.yaml"
+    #           env: 
+    #             CFNTEST: "I come from config2"
+    #           cwd: "~"
+
+# Outputs:
+#   TemplateID:
+#     Description: 'Jenkins Single Server Template'
+#     Value: 'Jenkins Single Server Template'
+#   PublicIp:
+#     Description: 'The Public IP address of the EC2 Instance'
+#     Value: !GetAtt Instance.PublicIp
+#   ServerAddress:
+#     Description: 'The public DNS address for this instance'
+#     Value: !GetAtt Instance.PublicDnsName
+#   JenkinsPass:
+#     Description: Jenkins One Time Install Password 
+#     Value: !Sub ssh -i deploy.pem ec2-user@${Instance.PublicDnsName} sudo cat /var/lib/jenkins/secrets/initialAdminPassword
