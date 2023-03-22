@@ -10,6 +10,8 @@ RUN yarn install --production
 
 COPY . .
 
+RUN echo "Hola mundo"
+
 RUN yarn build
 
 EXPOSE 3000
