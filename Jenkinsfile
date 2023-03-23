@@ -7,7 +7,7 @@ pipeline {
                 script{
                     cleanWs()
                     checkout([$class: 'GitSCM',
-                        branches: [[name: "main"]],
+                        branches: [[name: "dev"]],
                         doGenerateSubmoduleConfigurations: false,
                         extensions: [],
                         submoduleCfg: [],
