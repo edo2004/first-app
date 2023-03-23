@@ -19,6 +19,7 @@ pipeline {
         stage('Checkout tag') {
             steps {
                 sh 'git checkout tags/TAG1'
+                sh 'sudo docker build -t first-app .'
             }
         }
     }
