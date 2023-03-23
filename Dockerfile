@@ -10,7 +10,7 @@ COPY package.json .
 
 COPY . .
 
-RUN echo "Hola mundo"
+RUN echo "Hello world"
 
 #RUN yarn build
 
