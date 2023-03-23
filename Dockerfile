@@ -6,13 +6,13 @@ WORKDIR /app
 COPY package.json .
 #COPY yarn.lock .
 # install node modules and build assets
-#RUN yarn install --production
+RUN yarn install --production
 
 COPY . .
 
 RUN echo "Hello world"
 
-#RUN yarn build
+RUN yarn build
 
 EXPOSE 3000
 
